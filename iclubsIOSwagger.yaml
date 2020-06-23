@@ -1,0 +1,709 @@
+swagger: '2.0'
+info:
+  description: "This is our first API version. It is an important step towards launching the best loyalty platform we want to create for you, but it's a giant leap for the brazilian loyalty market. We created the first Loyalty As A Service API in Brazil and we are very proud of it.
+Our API is RESTFul . This means we use predictable, resource-oriented URLs to do loyalty operations. The API itself speaks exclusively in JSON , including errors."
+  version: "2.42"
+  title: sandbox.iclubs.io
+paths:
+  /accounts/v1/account/{document}/statement:
+    get:
+      summary: "Get account statements by document"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      - name: X-API-Key
+        type: string
+        required: true
+        in: header
+      - name: Authorization Bearer
+        type: string
+        description: id_token returned from login
+        required: true
+        in: header
+      - in: path
+        name: document
+        description: Document identification for Customer Account
+        type: string
+        required: true
+      responses:
+        '200':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/GetStatementByCpf'
+        '404':
+          description: Not found
+      tags:
+        - Accounts
+  /accounts/v1/account/{document}:
+    get:
+      summary: "Get account balance by document"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      - in: path
+        name: document
+        description: Customer Account document
+        type: string
+        required: true
+      responses:
+        '200':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/GetPointsBalanceByCpf'
+        '404':
+          description: Not found
+      tags:
+        - Accounts
+          
+  /transactions/v1/transactions/import:
+    post:
+      summary: "Import transactions"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-API-Key
+          type: string
+          required: true
+          in: header
+        - name: Authorization Bearer
+          type: string
+          description: id_token returned from login
+          required: true
+          in: header
+        - in: body
+          name: body
+          required: false
+          schema:
+            $ref: '#/definitions/importParametersPost'
+      responses:
+        '201':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/responseImportPost'
+        '400':
+          description: Bad request parameters
+      tags:
+        - Transactions
+  
+  /accounts/v1/oauth/login:
+    post:
+      summary: "Get token_id for authorization"
+
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-API-Key
+          type: string
+          required: true
+          in: header
+          
+        - name: body
+          in: body
+        
+          required: false
+          schema:
+            type: object
+            properties:
+              password:
+                type: string
+              username:
+                type: string
+      responses:
+        '200':
+          description: When your login was made successfully
+          schema: 
+                $ref: '#/definitions/oauthLoginResponse'
+      tags:
+        - oAuth
+              
+  
+  /plans/v1/plans:
+    get:
+      summary: "Get list of plans"
+      parameters:
+        - name: X-API-Key
+          type: string
+          required: true
+          in: header
+        - name: Authorization Bearer
+          type: string
+          description: id_token returned from login
+          required: true
+          in: header
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/GetAllPlans'
+        '404':
+          description: Not found
+      tags:
+        - Plans
+
+          
+ 
+  /plans/v1/customers:
+    get:
+      summary: "Get list of customers"
+      parameters:
+      - name: X-API-Key
+        type: string
+        required: true
+        in: header
+      - name: Authorization Bearer
+        type: string
+        description: id_token returned from login
+        required: true
+        in: header
+      responses:
+        "200":
+          description: Returns a list with containing all registered customers
+          schema:
+            $ref: '#/definitions/GetCustomers'
+        "404":
+          description: Not found
+      tags:
+        - Plans
+    post:
+      summary: "Create new costumer"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: X-API-Key
+        type: string
+        required: true
+        in: header
+      - name: Authorization Bearer
+        type: string
+        description: id_token returned from login
+        required: true
+        in: header
+      - name: document
+        in: path
+        description: Document identification for Customer Account
+        required: true
+        type: string
+      - name: name
+        in: path
+        description: The customer's name
+        required: true
+        type: string
+      - name: plan_id
+        in: path
+        description: The unique identifier of the customer's plan
+        required: true
+        type: string
+      responses:
+        "201":
+          description: Registers a new costumer with the provided information
+
+        "400":
+          description: Missing or incorrect information
+        "404":
+          description: Not found
+      tags:
+        - Plans
+  /plans/v1/customers/{document}:
+    get:
+      summary: "Get customer data by document"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: X-API-Key
+        type: string
+        required: true
+        in: header
+      - name: Authorization Bearer
+        type: string
+        description: id_token returned from login
+        required: true
+        in: header
+      - name: document
+        in: path
+        description: Document identification for Customer Account
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Locates the customer with the provided document
+          schema:
+            $ref: '#/definitions/GetCustomer'
+        "404":
+          description: Not found
+      tags:
+        - Plans
+  /settlement/v1/settlements:
+    get:
+      summary: "Get settlement by date and partner id"
+      consumes:
+        - application/json
+      parameters:
+        - name: X-API-Key
+          type: string
+          required: true
+          in: header
+        - name: Authorization Bearer
+          type: string
+          description: id_token returned from login
+          required: true
+          in: header
+        - in: query
+          name: date
+          description: date (YYYY-MM-DD)
+          type: string
+          required: true
+        - in: query
+          name: partnerId
+          description: partnerId
+          type: integer
+          required: true
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/GetSettlement'
+        400:
+          description: Bad request
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+        500:
+          description: Internar server error
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+      tags:
+        - Settlement
+                
+    put:
+      summary: "Pay settlement by id"
+      consumes:
+        - application/json
+      parameters:
+        - name: X-API-Key
+          type: string
+          required: true
+          in: header
+        - name: Authorization Bearer
+          type: string
+          description: id_token returned from login
+          required: true
+          in: header
+        - in: query
+          name: worflowAuthToken
+          description: worflowAuthToken
+          type: string
+          required: true
+        - in: query
+          name: settlementId
+          description: settlementId
+          type: string
+          required: true
+      responses:
+        '201':
+          description: Success
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+        '400':
+          description: Bad request
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+        '500':
+          description: Internar server error
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+      tags:
+        - Settlement
+
+  /transfer/v1/transfer:
+    post:
+      summary: "New transfer registration"
+      consumes:
+        - application/json
+      parameters:
+        - name: X-API-Key
+          type: string
+          required: true
+          in: header
+        - name: Authorization Bearer
+          type: string
+          description: id_token returned from login
+          required: true
+          in: header
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/NewTransfer' 
+      responses:
+        201:
+          description: Success
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+        400:
+          description: Bad request
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+        404:
+          description: Not found
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+        500:
+          description: Internar server error
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+      tags:
+        - Transfer
+                
+    get:
+      summary: "Get transfer history by dates"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      - name: X-API-Key
+        type: string
+        required: true
+        in: header
+      - name: Authorization Bearer
+        type: string
+        description: id_token returned from login
+        required: true
+        in: header
+      - in: query
+        name: start_date end_date
+        description: period start and end dates
+        type: string
+        required: true
+      responses:
+        '200':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/GetTransfersByDate'
+        '404':
+          description: Not found
+      tags:
+        - Transfer
+        
+        
+        
+  /transactions/v1/transactions/earning-rules:
+    get:
+      summary: "Get list of earning rules"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      - name: X-API-Key
+        type: string
+        required: true
+        in: header
+      - name: Authorization Bearer
+        type: string
+        description: id_token returned from login
+        required: true
+        in: header
+      responses:
+        '200':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/earningRulesResponse'
+      tags:
+        - Transactions
+definitions:
+
+  GetTransfersByDate:
+    type: object
+    properties:
+      content:
+        type: array
+        items:
+          type: object
+          properties:
+            customer_id:
+              type: string
+            partner_points_transfer:
+              type: number
+            transfer_date:
+              type: string
+            transfer_id:
+              type: string
+            partner_id:
+              type: number
+                
+  NewTransfer:
+    type: object
+    required:
+      - customerCpf
+      - partnerId
+      - amountOfPoints
+    properties:
+      customerCpf:
+        type: string
+      partnerId:
+        type: integer
+      amountOfPoints:
+        type: integer
+
+
+
+  GetSettlement:
+      type: object
+      properties:
+        settlement_id: 
+          type: string
+        payment_date: 
+          type: string
+        partner_id: 
+          type: string
+        settled: 
+          type: string
+        accumulated_value: 
+          type: string
+        settlement_date: 
+          type: string
+        workflow_authorization_code: 
+          type: string
+        transfer_list:
+          type: array
+          items:
+            type: object
+            properties:
+              customer_id:
+                type: string
+              partner_points_transfer:
+                type: number
+              transfer_date:
+                type: string
+              transfer_id:
+                type: string
+              partner_id:
+                type: number
+
+
+
+  GetStatementByCpf:
+    type: object
+    properties:
+      content:
+        type: array
+        items:
+          type: object
+          properties:
+            points:
+              type: string
+            registerType:
+              type: string
+            transaction:
+              type: object
+              properties:
+                transaction_value:
+                  type: string
+                transaction_currency:
+                  type: string
+                merchant_name:
+                  type: string
+                merchant_cnpj:
+                  type: string
+                transaction_date:
+                  type: string
+                  
+            rule_details: 
+              type: object
+              properties: 
+                conversion_rate:
+                  type: string
+                start_date:
+                  type: string
+                end_date:
+                  type: string
+                type:
+                  type: string
+                comparator:
+                  type: string
+                value:
+                  type: string
+  
+  GetPlanByCpf:
+    type: object
+    properties:
+      id:
+        type: string
+      expiration_type:
+        type: string
+      name:
+        type: string
+      conversion_rate:
+        type: string
+      expiration_time:
+        type: string
+  
+  GetAllPlans:
+    type: object
+    properties:
+      content:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+            expiration_type:
+              type: string
+            name:
+              type: string
+            conversion_rate:
+              type: string
+            expiration_time:
+              type: string
+ 
+  GetCustomer:
+    type: object
+    properties:
+      document:
+        type: string
+      name:
+        type: string
+      plan_id:
+        type: string
+          
+        
+  GetCustomers:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          type: object
+          properties:
+            document:
+              type: string
+            name:
+              type: string
+            plan_id:
+              type: string
+              
+  GetPointsBalanceByCpf:
+    type: object
+    properties:
+      content:
+        type: object
+        properties:
+          balance:
+            type: integer
+  
+  importParametersPost:
+    properties:
+      file:
+        example: base64 file
+        type: string
+  responseImportPost:
+    properties:
+      data:
+        type: string
+        
+        
+        
+  oauthLoginResponse:
+    type: object
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+      expiration_time:
+        type: integer
+      id_token:
+        type: string
+      token_type:
+        type: string
+        
+  
+  earningRulesResponse:
+    type: object
+    properties:
+      total_of_elements:
+        type: integer
+      content:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+            start_date:
+              type: string
+            end_date:
+              type: string
+            rule_detail:
+              type: object
+              properties:
+                type:
+                  type: string
+                value:
+                  type: string
+                comparator:
+                  type: string
+                conversion_rate:
+                  type: string
